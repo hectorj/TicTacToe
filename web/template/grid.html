@@ -1,0 +1,24 @@
+{{define "grid"}}
+<div class="grid">
+    {{range $line := .Coordinates}}
+        {{range $cell := $line}}
+            {{$occupant := $.OccupiedBy $cell }}
+                {{if $occupant.Valid}}
+                    {{if $occupant.Bool}}
+                    <a class="btn btn-danger" disabled="disabled">X</a>
+                    {{else}}
+                    <a class="btn btn-primary" disabled="disabled">O</a>
+                    {{end}}
+                {{else}}
+                    {{if not $.IsOver}}
+                        <a class="btn btn-default" href="{{ $.GetNextID $cell }}"></a>
+                    {{else}}
+                        <a class="btn btn-default" disabled="disabled"></a>
+                    {{end}}
+                {{end}}
+
+        {{end}}
+     <br/>
+    {{end}}
+</div>
+{{end}}

@@ -1,0 +1,26 @@
+{{define "main"}}
+<html>
+<head>
+    <title>Tic Tac Toe - Human vs CPU</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href="assets/main.css" rel="stylesheet"/>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <p class="well well-sm text-center" >
+        {{if .IsOver}}
+            <strong>Game over</strong> : the winner is <a class="btn btn-warning" disabled="disabled">{{ .Winner.String }}</a>
+        {{else}}
+            You play as <a class="btn btn-danger" disabled="disabled">X</a>
+        {{end}}
+    </p>
+    <br/>
+    <div id="grid">
+        {{template "grid" .}}
+    </div>
+    <br/>
+    <p class="text-center"><a class="btn btn-success btn-lg" href="./">New game</a></p>
+</body>
+</html>
+{{end}}

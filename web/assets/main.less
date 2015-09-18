@@ -1,0 +1,39 @@
+@import (once, reference) "node_modules/bootstrap/less/bootstrap.less";
+
+body {
+    text-align:center;
+}
+
+h1 {
+    text-align:center;
+    max-height: 25vmin;
+    font-weight: bold;
+    color: #470047;
+    text-decoration: underline;
+    text-shadow: 3px 3px 2px rgba(150, 150, 150, 1);
+
+    & + p {
+        max-height: 25vmin;
+        margin:0;
+        display:inline-block;
+    }
+}
+
+#grid div.grid {
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+    a.btn {
+        padding:3px;
+        margin:2px;
+        @size:20vmin;
+        width: @size;
+        height: @size;
+        font-size:@size;
+        line-height: 100%;
+    }
+}
+
+.btn-xxl {
+
+}
