@@ -1,4 +1,5 @@
 #!/bin/bash
+# From: https://github.com/h12w/gosweep/blob/master/gosweep.sh
 # The script does automatic checking on a Go package and its sub-packages, including:
 # 1. gofmt         (http://golang.org/cmd/gofmt/)
 # 2. goimports     (https://github.com/bradfitz/goimports)
@@ -10,17 +11,23 @@
 set -e
 
 # Automatic checks
+echo "+ gofmt"
 test -z "$(gofmt -l -w .     | tee /dev/stderr)"
+echo "+ goimports"
 test -z "$(goimports -l -w . | tee /dev/stderr)"
+echo "+ golint"
 test -z "$(golint .          | tee /dev/stderr)"
+echo "+ go vet"
 go vet ./...
+echo "+ test race"
 env GORACE="halt_on_error=1" go test -short -race ./...
 
 # Run test coverage on each subdirectories and merge the coverage profile.
 
 echo "mode: count" > profile.cov
 
-# Standard go tooling behavior is to ignore dirs with leading underscors
+# Standard go tooling behavior is to ignore dirs with leading underscores
+echo "+ coverage"
 for dir in $(find . -maxdepth 10 -not -path './.git*' -not -path '*/_*' -type d);
 do
 if ls $dir/*.go &> /dev/null; then
