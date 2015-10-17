@@ -34,19 +34,19 @@ func prepareData(ID uint32) templateData {
 		Grid: TicTacToe.GridFromID(ID),
 		Coordinates: [3][3]TicTacToe.Coordinates{
 			{
-				TicTacToe.Coordinates{0, 0},
-				TicTacToe.Coordinates{1, 0},
-				TicTacToe.Coordinates{2, 0},
+				TicTacToe.Coordinates{X: 0, Y: 0},
+				TicTacToe.Coordinates{X: 1, Y: 0},
+				TicTacToe.Coordinates{X: 2, Y: 0},
 			},
 			{
-				TicTacToe.Coordinates{0, 1},
-				TicTacToe.Coordinates{1, 1},
-				TicTacToe.Coordinates{2, 1},
+				TicTacToe.Coordinates{X: 0, Y: 1},
+				TicTacToe.Coordinates{X: 1, Y: 1},
+				TicTacToe.Coordinates{X: 2, Y: 1},
 			},
 			{
-				TicTacToe.Coordinates{0, 2},
-				TicTacToe.Coordinates{1, 2},
-				TicTacToe.Coordinates{2, 2},
+				TicTacToe.Coordinates{X: 0, Y: 2},
+				TicTacToe.Coordinates{X: 1, Y: 2},
+				TicTacToe.Coordinates{X: 2, Y: 2},
 			},
 		},
 		FirstTurn: ID <= 1,
