@@ -1,11 +1,10 @@
 package TicTacToe_test
 
 import (
+	"fmt"
 	"testing"
 
-	"TicTacToe"
-	"fmt"
-
+	"github.com/hectorj/TicTacToe"
 	"github.com/stretchr/testify/assert"
 )
 

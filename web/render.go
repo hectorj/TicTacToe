@@ -1,11 +1,12 @@
 package web
 
 import (
-	"TicTacToe"
 	"html/template"
 	"io"
 	"path/filepath"
 	"runtime"
+
+	"github.com/hectorj/TicTacToe"
 )
 
 type templateData struct {

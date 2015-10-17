@@ -1,12 +1,13 @@
 package main
 
 import (
-	"TicTacToe"
-	"TicTacToe/web"
 	"flag"
 	"os"
 	"path/filepath"
 	"strconv"
+
+	"github.com/hectorj/TicTacToe"
+	"github.com/hectorj/TicTacToe/web"
 )
 
 func main() {

@@ -1,7 +1,6 @@
 package main
 
 import (
-	"TicTacToe/web"
 	"flag"
 	"fmt"
 	"net/http"
@@ -9,6 +8,8 @@ import (
 	"runtime"
 	"strconv"
 	"strings"
+
+	"github.com/hectorj/TicTacToe/web"
 )
 
 func serveGrid(rw http.ResponseWriter, r *http.Request) {
