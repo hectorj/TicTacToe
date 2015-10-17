@@ -1,0 +1,108 @@
+
+<html>
+<head>
+    <title>Tic Tac Toe</title>
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+    <link href="assets/main.css" rel="stylesheet"/>
+</head>
+<body>
+    <h1>Tic Tac Toe</h1>
+    <p class="well well-sm text-center" >
+        
+            <strong>Game over</strong> : the winner is <a class="btn btn-warning" disabled="disabled">X</a>
+        
+    </p>
+    <br/>
+    <div id="grid">
+        
+<div class="grid">
+    
+        
+            
+                
+                    
+                    <a class="btn btn-danger" disabled="disabled">X</a>
+                    
+                
+
+        
+            
+                
+                    
+                    <a class="btn btn-danger" disabled="disabled">X</a>
+                    
+                
+
+        
+            
+                
+                    
+                    <a class="btn btn-danger" disabled="disabled">X</a>
+                    
+                
+
+        
+     <br/>
+    
+        
+            
+                
+                    
+                    <a class="btn btn-primary" disabled="disabled">O</a>
+                    
+                
+
+        
+            
+                
+                    
+                        <a class="btn btn-default" disabled="disabled"></a>
+                    
+                
+
+        
+            
+                
+                    
+                        <a class="btn btn-default" disabled="disabled"></a>
+                    
+                
+
+        
+     <br/>
+    
+        
+            
+                
+                    
+                    <a class="btn btn-primary" disabled="disabled">O</a>
+                    
+                
+
+        
+            
+                
+                    
+                    <a class="btn btn-primary" disabled="disabled">O</a>
+                    
+                
+
+        
+            
+                
+                    
+                    <a class="btn btn-danger" disabled="disabled">X</a>
+                    
+                
+
+        
+     <br/>
+    
+</div>
+
+    </div>
+    <br/>
+    <p class="text-center"><a class="btn btn-success btn-lg" href="./">New game</a></p>
+</body>
+</html>
