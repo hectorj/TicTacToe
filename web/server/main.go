@@ -40,7 +40,7 @@ func serveGrid(rw http.ResponseWriter, r *http.Request) {
 func parseGridIDFromURLPath(path string) (ID uint32, err error) {
 	ID = 1 // Default value
 
-	path = strings.Trim(path, "/")
+	path = strings.TrimSuffix(strings.Trim(path, "/"), ".html")
 
 	if path != "" {
 		ID64, err := strconv.ParseUint(path, 10, 32)

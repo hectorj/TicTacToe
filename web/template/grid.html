@@ -11,7 +11,7 @@
                     {{end}}
                 {{else}}
                     {{if not $.IsOver}}
-                        <a class="btn btn-default" href="{{ $.GetNextID $cell }}"></a>
+                        <a class="btn btn-default" href="./{{ $.GetNextID $cell }}.html"></a>
                     {{else}}
                         <a class="btn btn-default" disabled="disabled"></a>
                     {{end}}

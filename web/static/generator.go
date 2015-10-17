@@ -23,12 +23,12 @@ func main() {
 
 		var filename string
 		if ID == 1 {
-			filename = "index.html"
+			filename = "index"
 		} else {
 			filename = strconv.FormatUint(uint64(ID), 10)
 		}
 
-		filePath := filepath.Join(destDir, "/"+filename)
+		filePath := filepath.Join(destDir, "/"+filename+".html")
 
 		file, err := os.Create(filePath)
 		if err != nil {
