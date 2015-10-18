@@ -8,7 +8,7 @@ type score struct {
 
 // BestNextMove analyzes the given grid and returns the best next move according to the "IA" (simple minmax algorithm)
 func BestNextMove(g Grid) Coordinates {
-	return minimax(g, g.NextPlayer(), 0).coordinates
+	return minimax(g, g.GetNextPlayer(), 0).coordinates
 }
 
 func minimax(g Grid, player Player, turnsCount int) score {
@@ -58,7 +58,7 @@ func minimax(g Grid, player Player, turnsCount int) score {
 			if !winner.Valid {
 				score.value = 0
 			} else {
-				if winner.Bool == player.Bool {
+				if winner.Value == player {
 					score.value = 1
 				} else {
 					score.value = -1

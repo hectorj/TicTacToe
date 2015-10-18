@@ -20,7 +20,7 @@ func TestIsGameOver_Diagonal(t *testing.T) {
 
 	isOver, winner := grid.IsGameOver()
 	assert.True(t, isOver)
-	if winner != FirstToPlay {
+	if !winner.Valid || winner.Value != FirstToPlay {
 		t.FailNow()
 	}
 }
@@ -36,7 +36,7 @@ func TestIsGameOver_Line(t *testing.T) {
 
 	isOver, winner := grid.IsGameOver()
 	assert.True(t, isOver)
-	if winner != FirstToPlay {
+	if !winner.Valid || winner.Value != FirstToPlay {
 		t.FailNow()
 	}
 }
@@ -79,30 +79,28 @@ func TestIsGameOver_Column(t *testing.T) {
 	isOver, winner := grid.IsGameOver()
 	assert.True(t, isOver)
 
-	assert.NotEqual(t, FirstToPlay.Bool, winner.Bool)
+	assert.NotEqual(t, FirstToPlay, winner.Value)
 }
 
-func TestNextPlayer_Calculation(t *testing.T) {
+func TestGetNextPlayer_Calculation(t *testing.T) {
 	grid := &grid{}
 
-	assert.Equal(t, FirstToPlay, grid.NextPlayer())
-	assert.Equal(t, FirstToPlay, grid.NextPlayer())
+	assert.EqualValues(t, FirstToPlay, grid.GetNextPlayer())
+	assert.EqualValues(t, FirstToPlay, grid.GetNextPlayer())
 
 	grid.Play(Coordinates{0, 0})
 
 	grid.nextPlayer.Valid = false
-	expected := FirstToPlay
-	expected.Bool = !expected.Bool
 
-	assert.Equal(t, expected, grid.NextPlayer())
-	assert.Equal(t, expected, grid.NextPlayer())
+	assert.EqualValues(t, !FirstToPlay, grid.GetNextPlayer())
+	assert.EqualValues(t, !FirstToPlay, grid.GetNextPlayer())
 
 	grid.Play(Coordinates{0, 1})
 
 	grid.nextPlayer.Valid = false
 
-	assert.Equal(t, FirstToPlay, grid.NextPlayer())
-	assert.Equal(t, FirstToPlay, grid.NextPlayer())
+	assert.EqualValues(t, FirstToPlay, grid.GetNextPlayer())
+	assert.EqualValues(t, FirstToPlay, grid.GetNextPlayer())
 }
 
 func TestPlay_Occupied(t *testing.T) {
@@ -124,19 +122,19 @@ func TestPlay_Occupied(t *testing.T) {
 }
 
 func TestPlayerString(t *testing.T) {
-	player := Player{}
+	player := NullPlayer{}
 
-	assert.Equal(t, "no one", player.String())
+	assert.Equal(t, "nobody", player.String())
 
-	player.Bool = true
+	player.Value = true
 
-	assert.Equal(t, "no one", player.String())
+	assert.Equal(t, "nobody", player.String())
 
 	player.Valid = true
 
 	assert.Equal(t, "X", player.String())
 
-	player.Bool = false
+	player.Value = false
 
 	assert.Equal(t, "O", player.String())
 }
@@ -171,7 +169,7 @@ func fillTheIDMap(g *grid, idMap *map[uint32]struct{}) {
 
 		localGrid2 := g.Copy().(*grid)
 
-		localGrid2.nextPlayer.Bool = !localGrid2.nextPlayer.Bool
+		localGrid2.nextPlayer.Value = !localGrid2.nextPlayer.Value
 
 		(*idMap)[localGrid2.GetID()] = struct{}{}
 
@@ -200,7 +198,7 @@ func TestGridFromID_EmptyGrid_XFirst(t *testing.T) {
 
 	iterator := NewAllCellsIterator()
 
-	assert.Equal(t, XPlayer, g.NextPlayer())
+	assert.Equal(t, XPlayer, g.GetNextPlayer())
 
 	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
 		assert.False(t, g.OccupiedBy(coordinates).Valid)
@@ -212,7 +210,7 @@ func TestGridFromID_EmptyGrid_OFirst(t *testing.T) {
 
 	iterator := NewAllCellsIterator()
 
-	assert.Equal(t, OPlayer, g.NextPlayer())
+	assert.Equal(t, OPlayer, g.GetNextPlayer())
 
 	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
 		assert.False(t, g.OccupiedBy(coordinates).Valid)
@@ -224,11 +222,11 @@ func TestGridFromID_1Cell_XNext(t *testing.T) {
 
 	iterator := NewAllCellsIterator()
 
-	assert.Equal(t, XPlayer, g.NextPlayer())
+	assert.Equal(t, XPlayer, g.GetNextPlayer())
 
 	occupiedCoordinates := Coordinates{0, 0}
 
-	assert.Equal(t, XPlayer, g.OccupiedBy(occupiedCoordinates))
+	assert.Equal(t, NullPlayer{Valid: true, Value: XPlayer}, g.OccupiedBy(occupiedCoordinates))
 
 	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
 		if coordinates == occupiedCoordinates {
@@ -243,11 +241,11 @@ func TestGridFromID_1Cell_ONext(t *testing.T) {
 
 	iterator := NewAllCellsIterator()
 
-	assert.Equal(t, OPlayer, g.NextPlayer())
+	assert.Equal(t, OPlayer, g.GetNextPlayer())
 
 	occupiedCoordinates := Coordinates{1, 1}
 
-	assert.Equal(t, OPlayer, g.OccupiedBy(occupiedCoordinates))
+	assert.Equal(t, NullPlayer{Valid: true, Value: OPlayer}, g.OccupiedBy(occupiedCoordinates))
 
 	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
 		if coordinates == occupiedCoordinates {

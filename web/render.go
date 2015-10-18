@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 	"runtime"
 
+	"strings"
+
 	"github.com/hectorj/TicTacToe"
 )
 
@@ -14,7 +16,7 @@ type templateData struct {
 	Coordinates [3][3]TicTacToe.Coordinates
 	IsOver      bool
 	FirstTurn   bool
-	Winner      TicTacToe.Player
+	Winner      TicTacToe.NullPlayer
 }
 
 var (
@@ -24,6 +26,11 @@ var (
 func init() {
 	_, basepath, _, _ := runtime.Caller(0)
 	basepath = filepath.Dir(basepath)
+	if strings.HasSuffix(basepath, "_test/_obj_test") {
+		// This little hack is necessary for tests with coverage. @TODO: find a better solution
+		basepath = "."
+	}
+
 	templatesPath := filepath.Join(basepath, "/template/*")
 
 	templates = template.Must(template.ParseGlob(templatesPath))
