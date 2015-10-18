@@ -26,11 +26,9 @@ func minimax(g Grid, player Player, turnsCount int) score {
 		valid bool
 	}
 
-	iterator := NewAllCellsIterator()
-
 	turnsCount++
 
-	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
+	for _, coordinates := range NewAllCellsIterator() {
 		if g.OccupiedBy(coordinates).Valid {
 			continue
 		}

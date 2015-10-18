@@ -10,39 +10,37 @@ import (
 
 // TestAllLinesIterator checks that the iterator actually goes through all lines
 func TestAllLinesIterator(t *testing.T) {
-	iterator := TicTacToe.NewAllLinesIterator()
-
 	expected := [][]TicTacToe.Coordinates{
 		// Rows
 		{
 			{0, 0},
-			{0, 1},
-			{0, 2},
-		},
-		{
 			{1, 0},
-			{1, 1},
-			{1, 2},
+			{2, 0},
 		},
 		{
-			{2, 0},
+			{0, 1},
+			{1, 1},
 			{2, 1},
+		},
+		{
+			{0, 2},
+			{1, 2},
 			{2, 2},
 		},
 		// Columns
 		{
 			{0, 0},
-			{1, 0},
-			{2, 0},
-		},
-		{
 			{0, 1},
-			{1, 1},
-			{2, 1},
+			{0, 2},
 		},
 		{
-			{0, 2},
+			{1, 0},
+			{1, 1},
 			{1, 2},
+		},
+		{
+			{2, 0},
+			{2, 1},
 			{2, 2},
 		},
 		// Diagonals
@@ -58,56 +56,55 @@ func TestAllLinesIterator(t *testing.T) {
 		},
 	}
 
-	i := 0
-	for lineIterator, ok := iterator.Next(); ok; lineIterator, ok = iterator.Next() {
+	iterator := TicTacToe.NewAllLinesIterator()
+	assert.Len(t, iterator, len(expected))
+
+	for i, lineIterator := range iterator {
 		if !assert.True(t, len(expected) > i, "Line #%d, iterator %T", i, lineIterator) {
 			break
 		}
-		i2 := 0
-		for coordinates, ok := lineIterator.Next(); ok; coordinates, ok = lineIterator.Next() {
+		assert.Len(t, lineIterator, len(expected[i]), "Line #%d, iterator %T", i, lineIterator)
+
+		for i2, coordinates := range lineIterator {
 			if !assert.True(t, len(expected[i]) > i2, "Line #%d, cell #%d, iterator %T", i, i2, lineIterator) {
 				break
 			}
 			assert.Equal(t, expected[i][i2], coordinates, "Line #%d, cell #%d, iterator %T", i, i2, lineIterator)
-			i2++
 		}
-		assert.Len(t, expected[i], i2, "Line #%d, iterator %T", i, lineIterator)
-		i++
 	}
-	assert.Len(t, expected, i)
+
 }
 
 func ExampleNewAllLinesIterator() {
-	iterator := TicTacToe.NewAllLinesIterator()
-	for lineIterator, ok := iterator.Next(); ok; lineIterator, ok = iterator.Next() {
-		for coordinates, ok := lineIterator.Next(); ok; coordinates, ok = lineIterator.Next() {
+	for _, lineIterator := range TicTacToe.NewAllLinesIterator() {
+		for _, coordinates := range lineIterator {
 			fmt.Println(coordinates)
 		}
 		fmt.Println()
 	}
 	// Output:
 	// {0 0}
-	// {0 1}
-	// {0 2}
-	//
 	// {1 0}
-	// {1 1}
-	// {1 2}
-	//
 	// {2 0}
+	//
+	// {0 1}
+	// {1 1}
 	// {2 1}
+	//
+	// {0 2}
+	// {1 2}
 	// {2 2}
 	//
 	// {0 0}
-	// {1 0}
-	// {2 0}
-	//
 	// {0 1}
-	// {1 1}
-	// {2 1}
-	//
 	// {0 2}
+	//
+	// {1 0}
+	// {1 1}
 	// {1 2}
+	//
+	// {2 0}
+	// {2 1}
 	// {2 2}
 	//
 	// {0 0}
@@ -121,8 +118,6 @@ func ExampleNewAllLinesIterator() {
 
 // TestAllCellsIterator checks that the iterator actually goes through all cells
 func TestAllCellsIterator(t *testing.T) {
-	iterator := TicTacToe.NewAllCellsIterator()
-
 	expected := []TicTacToe.Coordinates{
 		{0, 0},
 		{0, 1},
@@ -135,22 +130,20 @@ func TestAllCellsIterator(t *testing.T) {
 		{2, 2},
 	}
 
-	i := 0
-	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
+	iterator := TicTacToe.NewAllCellsIterator()
+	assert.Len(t, iterator, len(expected))
+
+	for i, coordinates := range iterator {
 		if !assert.True(t, len(expected) > i, "Cell #%d", i) {
 			break
 		}
 
 		assert.Equal(t, expected[i], coordinates, "Line #%d, cell #%d", i)
-
-		i++
 	}
-	assert.Len(t, expected, i)
 }
 
 func ExampleNewAllCellsIterator() {
-	iterator := TicTacToe.NewAllCellsIterator()
-	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
+	for _, coordinates := range TicTacToe.NewAllCellsIterator() {
 		fmt.Println(coordinates)
 	}
 	// Output:

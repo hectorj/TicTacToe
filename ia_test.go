@@ -21,8 +21,7 @@ func TestPlay_NeverLose(t *testing.T) {
 }
 
 func playAllPossibilitiesForTest(t *testing.T, originalGrid Grid) {
-	iterator := NewAllCellsIterator()
-	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
+	for _, coordinates := range NewAllCellsIterator() {
 		if originalGrid.OccupiedBy(coordinates).Valid {
 			continue
 		}
