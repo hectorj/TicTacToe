@@ -77,7 +77,7 @@ func TestAllLinesIterator(t *testing.T) {
 	assert.Len(t, expected, i)
 }
 
-func ExampleAllLinesIterator() {
+func ExampleNewAllLinesIterator() {
 	iterator := TicTacToe.NewAllLinesIterator()
 	for lineIterator, ok := iterator.Next(); ok; lineIterator, ok = iterator.Next() {
 		for coordinates, ok := lineIterator.Next(); ok; coordinates, ok = lineIterator.Next() {
@@ -148,7 +148,7 @@ func TestAllCellsIterator(t *testing.T) {
 	assert.Len(t, expected, i)
 }
 
-func ExampleAllCellsIterator() {
+func ExampleNewAllCellsIterator() {
 	iterator := TicTacToe.NewAllCellsIterator()
 	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
 		fmt.Println(coordinates)
