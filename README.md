@@ -1,7 +1,7 @@
 # TicTacToe
 A simple human vs CPU TicTacToe game, powered by Go. You can play it here: http://hectorj.net/TicTacToe/
 
-[![Build Status](https://travis-ci.org/hectorj/TicTacToe.svg?branch=master)](https://travis-ci.org/hectorj/TicTacToe) [![GoDoc](https://godoc.org/github.com/hectorj/TicTacToe?status.svg)](https://godoc.org/github.com/hectorj/TicTacToe/) [![Coverage Status](https://coveralls.io/repos/hectorj/TicTacToe/badge.svg?branch=master)](https://coveralls.io/r/hectorj/TicTacToe?branch=master)
+[![Build Status](https://travis-ci.org/hectorj/TicTacToe.svg?branch=master)](https://travis-ci.org/hectorj/TicTacToe) [![GoDoc](https://godoc.org/github.com/hectorj/TicTacToe?status.svg)](https://godoc.org/github.com/hectorj/TicTacToe/) [![Coverage Status](https://coveralls.io/repos/hectorj/TicTacToe/badge.svg?branch=master&service=github)](https://coveralls.io/github/hectorj/TicTacToe?branch=master)
 
 ## Usage
 There is currently 3 ways of using this package:
