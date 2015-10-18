@@ -23,8 +23,7 @@ func init() {
 
 func playAllPossibilities(originalGrid Grid) {
 	// @TODO: refactor with `playAllPossibilitiesForTest` if possible
-	iterator := NewAllCellsIterator()
-	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
+	for _, coordinates := range NewAllCellsIterator() {
 		if originalGrid.OccupiedBy(coordinates).Valid {
 			continue
 		}

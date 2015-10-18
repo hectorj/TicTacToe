@@ -155,8 +155,7 @@ func fillTheIDMap(g *grid, idMap *map[uint32]struct{}) {
 	}
 	(*idMap)[g.GetID()] = struct{}{}
 
-	iterator := NewAllCellsIterator()
-	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
+	for _, coordinates := range NewAllCellsIterator() {
 		if g.OccupiedBy(coordinates).Valid {
 			continue
 		}
@@ -196,11 +195,9 @@ func BenchmarkGrid_GetID(b *testing.B) {
 func TestGridFromID_EmptyGrid_XFirst(t *testing.T) {
 	g := GridFromID(1)
 
-	iterator := NewAllCellsIterator()
-
 	assert.Equal(t, XPlayer, g.GetNextPlayer())
 
-	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
+	for _, coordinates := range NewAllCellsIterator() {
 		assert.False(t, g.OccupiedBy(coordinates).Valid)
 	}
 }
@@ -208,11 +205,9 @@ func TestGridFromID_EmptyGrid_XFirst(t *testing.T) {
 func TestGridFromID_EmptyGrid_OFirst(t *testing.T) {
 	g := GridFromID(0)
 
-	iterator := NewAllCellsIterator()
-
 	assert.Equal(t, OPlayer, g.GetNextPlayer())
 
-	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
+	for _, coordinates := range NewAllCellsIterator() {
 		assert.False(t, g.OccupiedBy(coordinates).Valid)
 	}
 }
@@ -220,15 +215,13 @@ func TestGridFromID_EmptyGrid_OFirst(t *testing.T) {
 func TestGridFromID_1Cell_XNext(t *testing.T) {
 	g := GridFromID(7) // b0000000000000000111
 
-	iterator := NewAllCellsIterator()
-
 	assert.Equal(t, XPlayer, g.GetNextPlayer())
 
 	occupiedCoordinates := Coordinates{0, 0}
 
 	assert.Equal(t, NullPlayer{Valid: true, Value: XPlayer}, g.OccupiedBy(occupiedCoordinates))
 
-	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
+	for _, coordinates := range NewAllCellsIterator() {
 		if coordinates == occupiedCoordinates {
 			continue
 		}
@@ -239,15 +232,13 @@ func TestGridFromID_1Cell_XNext(t *testing.T) {
 func TestGridFromID_1Cell_ONext(t *testing.T) {
 	g := GridFromID(512) // b0000000001000000000
 
-	iterator := NewAllCellsIterator()
-
 	assert.Equal(t, OPlayer, g.GetNextPlayer())
 
 	occupiedCoordinates := Coordinates{1, 1}
 
 	assert.Equal(t, NullPlayer{Valid: true, Value: OPlayer}, g.OccupiedBy(occupiedCoordinates))
 
-	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
+	for _, coordinates := range NewAllCellsIterator() {
 		if coordinates == occupiedCoordinates {
 			continue
 		}
@@ -261,8 +252,7 @@ func TestGrid_GetNextID(t *testing.T) {
 }
 
 func getNextIDRecursiveTest(t *testing.T, g Grid) {
-	iterator := NewAllCellsIterator()
-	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
+	for _, coordinates := range NewAllCellsIterator() {
 		if g.OccupiedBy(coordinates).Valid {
 			continue
 		}

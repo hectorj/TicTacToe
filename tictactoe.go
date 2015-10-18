@@ -165,8 +165,8 @@ func (g *grid) GetNextPlayer() Player {
 	if !g.nextPlayer.Valid {
 		// We haven't cached which player plays next, so we recalculate it
 		var xCount, oCount int
-		iterator := NewAllCellsIterator()
-		for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
+
+		for _, coordinates := range NewAllCellsIterator() {
 			occupant := g.OccupiedBy(coordinates)
 			if occupant.Valid {
 				switch occupant.Value {
@@ -208,11 +208,10 @@ func (g *grid) IsGameOver() (isOver bool, winner NullPlayer) {
 	// One way could be to use the grid ID. Or to rewrite the iterators.
 	hasInoccupiedCase := false
 
-	iterator := NewAllLinesIterator()
-	for lineIterator, ok := iterator.Next(); ok; lineIterator, ok = iterator.Next() {
+	for _, lineIterator := range NewAllLinesIterator() {
 		winner := NullPlayer{}
 		noWinnerOnThisLine := false
-		for coordinates, ok := lineIterator.Next(); ok; coordinates, ok = lineIterator.Next() {
+		for _, coordinates := range lineIterator {
 			if !g.cells[coordinates.X][coordinates.Y].Valid {
 				hasInoccupiedCase = true
 				noWinnerOnThisLine = true
