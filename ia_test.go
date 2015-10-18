@@ -85,22 +85,23 @@ func ExampleBestNextMove() {
 	grid := NewGrid()
 
 	// Let's have a game just between IA
-	for {
+	var (
+		isOver bool
+		winner NullPlayer
+	)
+	for !isOver {
 		coordinatesToPlay := BestNextMove(grid)
 		grid.Play(coordinatesToPlay)
 
-		isOver, winner := grid.IsGameOver()
-
-		if isOver {
-			switch winner {
-			case NoPlayer:
-				// Spoilers: it's always a draw game
-				fmt.Println("Draw game!")
-			default:
-				fmt.Println(winner.String() + " wins!")
-			}
-			break
-		}
+		isOver, winner = grid.IsGameOver()
 	}
+
+	if !winner.Valid {
+		// Spoilers: it's always a draw game
+		fmt.Println("Draw game!")
+	} else {
+		fmt.Println(winner.String() + " wins!")
+	}
+
 	// Output: Draw game!
 }

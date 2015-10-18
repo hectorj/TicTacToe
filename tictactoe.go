@@ -1,34 +1,39 @@
 package TicTacToe
 
-import (
-	"database/sql"
-	"fmt"
-)
+import "fmt"
 
-// @TODO : do not use a global var
-var FirstToPlay = XPlayer
+// Player represents the X player or the O player
+type Player bool
 
-// Player represents the X player, the O player, or none of them.
-// The `Valid` field is false in that last case
-type Player sql.NullBool
+// NullPlayer represents the X player or the O player, or none of them
+type NullPlayer struct {
+	Valid bool
+	Value Player
+}
 
-var (
-	// NoPlayer represents none of the two player
-	NoPlayer = Player{Bool: false, Valid: false}
+const (
 	// OPlayer is the player using circles
-	OPlayer = Player{Bool: false, Valid: true}
+	OPlayer Player = false
 	// XPlayer is the player using Xs
-	XPlayer = Player{Bool: true, Valid: true}
+	XPlayer Player = true
+	// FirstToPlay designates the first player
+	FirstToPlay Player = XPlayer
 )
+
+func (p NullPlayer) String() string {
+	if !p.Valid {
+		return "nobody"
+	}
+
+	return p.Value.String()
+}
 
 func (p Player) String() string {
-	if !p.Valid {
-		return "no one"
-	} else if p.Bool {
+	if p == XPlayer {
 		return "X"
-	} else {
-		return "O"
 	}
+
+	return "O"
 }
 
 // Grid represents the game's board, with its 3x3 cells
@@ -38,33 +43,41 @@ type Grid interface {
 	// GetNextID returns the ID of the grid after the given coordinates would be played.
 	GetNextID(Coordinates) uint32
 	// IsGameOver returns true if there is a winner (in which case the second value is OPlayer or XPlayer)
-	// or the grid is full (which makes the second value NoPlayer),
-	IsGameOver() (isOver bool, winner Player)
-	// OccupiedBy tells you if the cell at the given coordinates is occupied by OPlayer, XPlayer, or free (NoPlayer)
-	OccupiedBy(Coordinates) Player
+	// or the grid is full
+	IsGameOver() (isOver bool, winner NullPlayer)
+	// OccupiedBy tells you if the cell at the given coordinates is occupied by OPlayer, XPlayer, or free
+	OccupiedBy(Coordinates) NullPlayer
 	// Play fills the cell at the given coordinates with the token of the active player.
 	Play(Coordinates)
-	// NextPlayer tells you which player is the current active player.
-	NextPlayer() Player
+	// GetNextPlayer tells you which player is the current active player.
+	GetNextPlayer() Player
 	// Copy makes a copy of the grid which is not a reference (can be modified without altering the original).
 	Copy() Grid
+}
+
+type grid struct {
+	cells      [3][3]NullPlayer
+	nextPlayer NullPlayer
 }
 
 // NewGrid instantiates a new blank grid, ready to be played.
 func NewGrid() Grid {
 	return &grid{
-		nextPlayer: FirstToPlay,
+		nextPlayer: NullPlayer{
+			Valid: true,
+			Value: FirstToPlay,
+		},
 	}
 }
 
 // GridFromID re-builds a grid from an ID
 func GridFromID(ID uint32) Grid {
 	g := &grid{
-		nextPlayer: Player{Bool: false, Valid: true},
+		nextPlayer: NullPlayer{Value: false, Valid: true},
 	}
 
 	if (ID & uint32(1)) > 0 {
-		g.nextPlayer.Bool = !g.nextPlayer.Bool
+		g.nextPlayer.Value = !g.nextPlayer.Value
 	}
 
 	var i uint = 1
@@ -75,7 +88,7 @@ func GridFromID(ID uint32) Grid {
 			}
 			i++
 
-			g.cells[x][y].Bool = (ID & uint32(1<<i)) > 0
+			g.cells[x][y].Value = (ID & uint32(1<<i)) > 0
 			i++
 		}
 	}
@@ -83,17 +96,10 @@ func GridFromID(ID uint32) Grid {
 	return g
 }
 
-type grid struct {
-	cells      [3][3]Player
-	nextPlayer Player
-}
-
-var _ Grid = (*grid)(nil)
-
 func (g *grid) GetID() uint32 {
 	// First bit designates the next player
 	var hash uint32
-	if g.NextPlayer().Valid && g.NextPlayer().Bool {
+	if g.GetNextPlayer() {
 		hash = 1
 	}
 
@@ -105,7 +111,7 @@ func (g *grid) GetID() uint32 {
 				// The first one tells us if the cell is occupied
 				hash |= uint32(1 << i)
 
-				if g.cells[x][y].Bool {
+				if g.cells[x][y].Value {
 					// The second one tells us by whom it is
 					hash |= uint32(1 << (i + 1))
 				}
@@ -123,7 +129,7 @@ func (g *grid) GetNextID(c Coordinates) uint32 {
 		cellBits uint32
 		result   = g.GetID()
 	)
-	if g.NextPlayer().Bool {
+	if g.GetNextPlayer() {
 		cellBits = 3 // b11
 		result ^= 1
 	} else {
@@ -155,30 +161,34 @@ func (g *grid) Copy() Grid {
 	return copy
 }
 
-func (g *grid) NextPlayer() Player {
+func (g *grid) GetNextPlayer() Player {
 	if !g.nextPlayer.Valid {
 		// We haven't cached which player plays next, so we recalculate it
 		var xCount, oCount int
 		iterator := NewAllCellsIterator()
 		for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
-			switch g.OccupiedBy(coordinates) {
-			case OPlayer:
-				oCount++
-			case XPlayer:
-				xCount++
+			occupant := g.OccupiedBy(coordinates)
+			if occupant.Valid {
+				switch occupant.Value {
+				case OPlayer:
+					oCount++
+				case XPlayer:
+					xCount++
+				}
 			}
 		}
 
 		if xCount > oCount {
-			g.nextPlayer = OPlayer
+			g.nextPlayer.Value = OPlayer
 		} else if xCount < oCount {
-			g.nextPlayer = XPlayer
+			g.nextPlayer.Value = XPlayer
 		} else {
-			g.nextPlayer = FirstToPlay
+			g.nextPlayer.Value = FirstToPlay
 		}
+		g.nextPlayer.Valid = true
 	}
 
-	return g.nextPlayer
+	return g.nextPlayer.Value
 }
 
 func (g *grid) Play(coordinates Coordinates) {
@@ -186,25 +196,21 @@ func (g *grid) Play(coordinates Coordinates) {
 		panic(fmt.Errorf("Can't play %d,%d : already occupied by player %q", coordinates.X, coordinates.Y, g.cells[coordinates.X][coordinates.Y]))
 	}
 
-	player := g.NextPlayer()
+	player := g.GetNextPlayer()
 
-	g.cells[coordinates.X][coordinates.Y] = player
+	g.cells[coordinates.X][coordinates.Y] = NullPlayer{Valid: true, Value: player}
 
-	if player == OPlayer {
-		g.nextPlayer = XPlayer
-	} else {
-		g.nextPlayer = OPlayer
-	}
+	g.nextPlayer.Value = !g.nextPlayer.Value
 }
 
-func (g *grid) IsGameOver() (isOver bool, winner Player) {
+func (g *grid) IsGameOver() (isOver bool, winner NullPlayer) {
 	// @TODO : Optimize. This method is called quite often, and the iterators are relatively slow.
 	// One way could be to use the grid ID. Or to rewrite the iterators.
 	hasInoccupiedCase := false
 
 	iterator := NewAllLinesIterator()
 	for lineIterator, ok := iterator.Next(); ok; lineIterator, ok = iterator.Next() {
-		winner := NoPlayer
+		winner := NullPlayer{}
 		noWinnerOnThisLine := false
 		for coordinates, ok := lineIterator.Next(); ok; coordinates, ok = lineIterator.Next() {
 			if !g.cells[coordinates.X][coordinates.Y].Valid {
@@ -212,7 +218,7 @@ func (g *grid) IsGameOver() (isOver bool, winner Player) {
 				noWinnerOnThisLine = true
 				break
 			} else if !noWinnerOnThisLine {
-				if winner == NoPlayer {
+				if !winner.Valid {
 					winner = g.cells[coordinates.X][coordinates.Y]
 				} else if winner != g.cells[coordinates.X][coordinates.Y] {
 					noWinnerOnThisLine = true
@@ -224,9 +230,9 @@ func (g *grid) IsGameOver() (isOver bool, winner Player) {
 		}
 	}
 
-	return !hasInoccupiedCase, NoPlayer
+	return !hasInoccupiedCase, NullPlayer{}
 }
 
-func (g *grid) OccupiedBy(coordinates Coordinates) Player {
+func (g *grid) OccupiedBy(coordinates Coordinates) NullPlayer {
 	return g.cells[coordinates.X][coordinates.Y]
 }
