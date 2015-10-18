@@ -10,15 +10,15 @@ var scoreCache = struct {
 }
 
 func init() {
-	//	// warm-up the cache
-	//	// Opponent first
-	//	grid := NewGrid()
-	//	playAllPossibilities(grid)
-	//
-	//	// IA first
-	//	grid = NewGrid()
-	//	grid.Play(BestNextMove(grid))
-	//	playAllPossibilities(grid)
+	// warm-up the cache
+	// Opponent first
+	grid := NewGrid()
+	playAllPossibilities(grid)
+
+	// IA first
+	grid = NewGrid()
+	grid.Play(BestNextMove(grid))
+	playAllPossibilities(grid)
 }
 
 func playAllPossibilities(originalGrid Grid) {
