@@ -45,19 +45,3 @@ func playAllPossibilities(originalGrid Grid) {
 		playAllPossibilities(grid)
 	}
 }
-
-// GetAllGrids returns a slice of Grid generated from the scoreCache
-func GetAllGrids() []Grid {
-	scoreCache.RLock()
-	defer scoreCache.RUnlock()
-
-	result := make([]Grid, len(scoreCache.data))
-
-	index := 0
-	for ID := range scoreCache.data {
-		result[index] = GridFromID(ID)
-		index++
-	}
-
-	return result
-}

@@ -10,9 +10,9 @@
     <h1>Tic Tac Toe</h1>
     <p class="well well-sm text-center" >
         {{if .IsOver}}
-            <strong>Game over</strong> : the winner is <a class="btn btn-warning" disabled="disabled">{{ .Winner.String }}</a>
+            <strong>Game over</strong> : the winner is <a class="btn btn-player-{{ .Winner.String }}" disabled="disabled">{{ .Winner.String }}</a>
         {{else}}
-            You play as <a class="btn btn-danger" disabled="disabled">X</a>
+            You play as <a class="btn btn-player-{{ .GetNextPlayer.String }}" disabled="disabled">{{ .GetNextPlayer.String }}</a>
         {{end}}
     </p>
     <br/>
@@ -20,7 +20,7 @@
         {{template "grid" .}}
     </div>
     <br/>
-    <p class="text-center"><a class="btn btn-success btn-lg" href="./">New game</a></p>
+    <p class="text-center"><a class="btn btn-success btn-lg" href="./">New game (you start)</a>&nbsp;<a class="btn btn-success btn-lg" href="./cpu.html">New game (CPU starts)</a></p>
 </body>
 </html>
 {{end}}
