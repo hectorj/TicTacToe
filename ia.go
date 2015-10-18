@@ -3,14 +3,15 @@ package TicTacToe
 type score struct {
 	coordinates Coordinates
 	value       int
+	turnsCount  int
 }
 
 // BestNextMove analyzes the given grid and returns the best next move according to the "IA" (simple minmax algorithm)
 func BestNextMove(g Grid) Coordinates {
-	return minimax(g, g.NextPlayer(), true).coordinates
+	return minimax(g, g.NextPlayer(), 0).coordinates
 }
 
-func minimax(g Grid, player Player, ourTurn bool) score {
+func minimax(g Grid, player Player, turnsCount int) score {
 	ID := g.GetID()
 
 	scoreCache.RLock()
@@ -27,6 +28,8 @@ func minimax(g Grid, player Player, ourTurn bool) score {
 
 	iterator := NewAllCellsIterator()
 
+	turnsCount++
+
 	for coordinates, ok := iterator.Next(); ok; coordinates, ok = iterator.Next() {
 		if g.OccupiedBy(coordinates).Valid {
 			continue
@@ -37,12 +40,14 @@ func minimax(g Grid, player Player, ourTurn bool) score {
 
 		score := score{
 			coordinates: coordinates,
+			turnsCount:  turnsCount,
 		}
 
 		isOver, winner := grid.IsGameOver()
 		if !isOver {
-			childrenScore := minimax(grid, player, !ourTurn)
+			childrenScore := minimax(grid, player, turnsCount)
 			score.value = childrenScore.value
+			score.turnsCount = childrenScore.turnsCount
 		} else {
 			// These 3 lines are here just to have the full data for GetAllGrids
 			// That's not very elegant
@@ -53,7 +58,7 @@ func minimax(g Grid, player Player, ourTurn bool) score {
 			if !winner.Valid {
 				score.value = 0
 			} else {
-				if winner == player {
+				if winner.Bool == player.Bool {
 					score.value = 1
 				} else {
 					score.value = -1
@@ -61,7 +66,11 @@ func minimax(g Grid, player Player, ourTurn bool) score {
 			}
 		}
 
-		if !bestScore.valid || (ourTurn && score.value > bestScore.value) || (!ourTurn && score.value < bestScore.value) {
+		ourTurn := turnsCount%2 == 1
+		if !bestScore.valid || // If there is no best score yet
+			(ourTurn && score.value > bestScore.value) || // or this is our turn and we have a superior value
+			(!ourTurn && score.value < bestScore.value) || // or this is our opponent's turn and we have an inferioir value
+			(score.value == bestScore.value && score.turnsCount < bestScore.turnsCount) { // or we have the same value, but ending faster
 			bestScore.score = score
 			bestScore.valid = true
 		}

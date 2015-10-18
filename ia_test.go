@@ -10,7 +10,6 @@ import (
 
 // TestPlay_NeverLose checks that the "IA" never loses
 func TestPlay_NeverLose(t *testing.T) {
-	fmt.Println(len(scoreCache.data))
 	// Opponent first
 	grid := NewGrid()
 	playAllPossibilitiesForTest(t, grid)
@@ -72,6 +71,14 @@ func playIA(t *testing.T, grid Grid) bool {
 
 	isOver, _ := grid.IsGameOver()
 	return isOver
+}
+
+func TestIA_TakeTheWin(t *testing.T) {
+	// Regression test for a situation where the IA can win immediately but doesn't
+	g := GridFromID(393466) // 0b1100000000011111010
+
+	result := BestNextMove(g)
+	assert.Equal(t, Coordinates{2, 0}, result)
 }
 
 func ExampleBestNextMove() {
