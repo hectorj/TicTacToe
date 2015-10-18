@@ -47,12 +47,6 @@ func minimax(g Grid, player Player, turnsCount int) score {
 			score.value = childrenScore.value
 			score.turnsCount = childrenScore.turnsCount
 		} else {
-			// These 3 lines are here just to have the full data for GetAllGrids
-			// That's not very elegant
-			scoreCache.Lock()
-			scoreCache.data[grid.GetID()] = score
-			scoreCache.Unlock()
-
 			if !winner.Valid {
 				score.value = 0
 			} else {

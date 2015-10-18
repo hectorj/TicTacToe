@@ -11,7 +11,7 @@ import (
 	"github.com/hectorj/TicTacToe"
 )
 
-type templateData struct {
+type TemplateData struct {
 	TicTacToe.Grid
 	Coordinates [3][3]TicTacToe.Coordinates
 	IsOver      bool
@@ -36,8 +36,8 @@ func init() {
 	templates = template.Must(template.ParseGlob(templatesPath))
 }
 
-func prepareData(ID uint32) templateData {
-	data := templateData{
+func PrepareData(ID uint32) TemplateData {
+	data := TemplateData{
 		Grid: TicTacToe.GridFromID(ID),
 		Coordinates: [3][3]TicTacToe.Coordinates{
 			{
@@ -59,19 +59,17 @@ func prepareData(ID uint32) templateData {
 		FirstTurn: ID <= 1,
 	}
 
-	if !data.FirstTurn {
-		data.IsOver, data.Winner = data.Grid.IsGameOver()
-
-		if !data.IsOver {
-			coordinates := TicTacToe.BestNextMove(data.Grid)
-			data.Grid.Play(coordinates)
-			data.IsOver, data.Winner = data.Grid.IsGameOver()
-		}
-	}
+	data.IsOver, data.Winner = data.Grid.IsGameOver()
 
 	return data
 }
 
-func Render(wr io.Writer, ID uint32) error {
-	return templates.ExecuteTemplate(wr, "main", prepareData(ID))
+func (data *TemplateData) PlayCPUTurn() {
+	coordinates := TicTacToe.BestNextMove(data.Grid)
+	data.Grid.Play(coordinates)
+	data.IsOver, data.Winner = data.Grid.IsGameOver()
+}
+
+func Render(wr io.Writer, data TemplateData) error {
+	return templates.ExecuteTemplate(wr, "main", data)
 }

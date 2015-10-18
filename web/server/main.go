@@ -3,12 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"path/filepath"
 	"runtime"
 	"strconv"
 	"strings"
 
+	"github.com/dropbox/godropbox/errors"
 	"github.com/hectorj/TicTacToe/web"
 )
 
@@ -17,42 +19,58 @@ func serveGrid(rw http.ResponseWriter, r *http.Request) {
 		// Basic error handling
 		if panicErr := recover(); panicErr != nil {
 			err := panicErr.(error)
+			log.Print(err)
 			rw.WriteHeader(http.StatusInternalServerError)
 			fmt.Println(err.Error())
 			rw.Write([]byte(err.Error()))
 		}
 	}()
 
-	ID, err := parseGridIDFromURLPath(r.URL.Path)
+	ID, IAPlaysFirst, err := parseURLPath(r.URL.Path)
 
 	if err != nil {
+		log.Print(err)
 		rw.WriteHeader(http.StatusNotFound)
 		rw.Write([]byte("Not found"))
 		return
 	}
 
-	err = web.Render(rw, ID)
+	templateData := web.PrepareData(ID)
+
+	if !templateData.IsOver && (!templateData.FirstTurn || IAPlaysFirst) {
+		templateData.PlayCPUTurn()
+	}
+
+	err = web.Render(rw, templateData)
 
 	if err != nil {
 		panic(err)
 	}
 }
 
-func parseGridIDFromURLPath(path string) (ID uint32, err error) {
-	ID = 1 // Default value
+func parseURLPath(path string) (ID uint32, IAPlaysFirst bool, err error) {
+	path = strings.Trim(path, "/")
 
-	path = strings.TrimSuffix(strings.Trim(path, "/"), ".html")
-
-	if path != "" {
-		ID64, err := strconv.ParseUint(path, 10, 32)
-		if err != nil {
-			return 0, err
+	if path == "" {
+		return 1, false, nil // blank grid, X first
+	} else {
+		if !strings.HasSuffix(path, ".html") {
+			return 0, false, errors.New("missing html suffix")
 		}
 
-		ID = uint32(ID64)
-	}
+		path = strings.TrimSuffix(path, ".html")
 
-	return ID, nil
+		if path == "cpu" {
+			return 1, true, nil // blank grid, X first
+		} else {
+			ID64, err := strconv.ParseUint(path, 10, 32)
+			if err != nil {
+				return 0, false, err
+			}
+
+			return uint32(ID64), false, nil
+		}
+	}
 }
 
 func main() {
